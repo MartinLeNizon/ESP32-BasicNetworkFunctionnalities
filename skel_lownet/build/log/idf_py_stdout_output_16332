@@ -1,0 +1,83 @@
+[1/10] Performing build step for 'bootloader'
+[1/1] cmd.exe /C "cd /D C:\Users\nizon\esp\assignment_02\skel_lownet\build\bootloader\esp-idf\esptool_py && C:\Espressif\python_env\idf5.0_py3.11_env\Scripts\python.exe C:/Espressif/frameworks/esp-idf-v5.0.4/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 C:/Users/nizon/esp/assignment_02/skel_lownet/build/bootloader/bootloader.bin"
+Bootloader binary size 0x6750 bytes. 0x8b0 bytes (8%) free.
+[2/8] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/app_main.c.obj
+C:/Users/nizon/esp/assignment_02/skel_lownet/main/app_main.c: In function 'app_main':
+C:/Users/nizon/esp/assignment_02/skel_lownet/main/app_main.c:78:23: warning: unused variable 'msg' [-Wunused-variable]
+   78 |                 char* msg = strtok(NULL, "\n"); // Get the rest of the line as a message
+      |                       ^~~
+C:/Users/nizon/esp/assignment_02/skel_lownet/main/app_main.c:77:39: warning: unused variable 'dest_node' [-Wunused-variable]
+   77 |                                 char* dest_node = strtok(msg_in, " "); // Get the dest node, with the @
+      |                                       ^~~~~~~~~
+[3/8] Linking C static library esp-idf\main\libmain.a
+[4/8] Generating ld/sections.ld
+[5/8] Linking CXX executable skel_lownet.elf
+[6/8] Generating binary image from built executable
+esptool.py v4.6.2
+Creating esp32 image...
+Merged 26 ELF sections
+Successfully created esp32 image.
+Generated C:/Users/nizon/esp/assignment_02/skel_lownet/build/skel_lownet.bin
+[7/8] cmd.exe /C "cd /D C:\Users\nizon\esp\assignment_02\skel_lownet\build\esp-idf\esptool_py && C:\Espressif\python_env\idf5.0_py3.11_env\Scripts\python.exe C:/Espressif/frameworks/esp-idf-v5.0.4/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/Users/nizon/esp/assignment_02/skel_lownet/build/partition_table/partition-table.bin C:/Users/nizon/esp/assignment_02/skel_lownet/build/skel_lownet.bin"
+skel_lownet.bin binary size 0xaca40 bytes. Smallest app partition is 0x100000 bytes. 0x535c0 bytes (33%) free.
+[7/8] cmd.exe /C "cd /D C:\Espressif\frameworks\esp-idf-v5.0.4\components\esptool_py && C:\Espressif\tools\cmake\3.24.0\bin\cmake.exe -D IDF_PATH=C:/Espressif/frameworks/esp-idf-v5.0.4 -D SERIAL_TOOL=C:/Espressif/python_env/idf5.0_py3.11_env/Scripts/python.exe;;C:/Espressif/frameworks/esp-idf-v5.0.4/components/esptool_py/esptool/esptool.py;--chip;esp32 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=C:/Users/nizon/esp/assignment_02/skel_lownet/build -P C:/Espressif/frameworks/esp-idf-v5.0.4/components/esptool_py/run_serial_tool.cmake"
+esptool esp32 -p COM5 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 skel_lownet.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.6.2
+Serial port COM5
+Connecting.....
+Chip is ESP32-D0WDQ6 (revision v1.0)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 24:6f:28:7c:eb:58
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000bcfff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Compressed 26448 bytes to 16481...
+Writing at 0x00001000... (50 %)
+Writing at 0x000076d2... (100 %)
+Wrote 26448 bytes (16481 compressed) at 0x00001000 in 0.8 seconds (effective 282.1 kbit/s)...
+Hash of data verified.
+Compressed 707136 bytes to 456255...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001ab4f... (7 %)
+Writing at 0x000237c4... (10 %)
+Writing at 0x00028d21... (14 %)
+Writing at 0x0003210b... (17 %)
+Writing at 0x000376fd... (21 %)
+Writing at 0x0003d1d9... (25 %)
+Writing at 0x0004300b... (28 %)
+Writing at 0x00048777... (32 %)
+Writing at 0x0004d904... (35 %)
+Writing at 0x00052d37... (39 %)
+Writing at 0x000580c1... (42 %)
+Writing at 0x0005d6d6... (46 %)
+Writing at 0x00062f85... (50 %)
+Writing at 0x00068a91... (53 %)
+Writing at 0x0006e1d3... (57 %)
+Writing at 0x000739ff... (60 %)
+Writing at 0x00079356... (64 %)
+Writing at 0x0007ea9b... (67 %)
+Writing at 0x0008460a... (71 %)
+Writing at 0x0008a452... (75 %)
+Writing at 0x0008ffd2... (78 %)
+Writing at 0x0009697d... (82 %)
+Writing at 0x000a0a78... (85 %)
+Writing at 0x000a6fc0... (89 %)
+Writing at 0x000ace81... (92 %)
+Writing at 0x000b26ce... (96 %)
+Writing at 0x000b7f98... (100 %)
+Wrote 707136 bytes (456255 compressed) at 0x00010000 in 10.7 seconds (effective 526.5 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 261.9 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
