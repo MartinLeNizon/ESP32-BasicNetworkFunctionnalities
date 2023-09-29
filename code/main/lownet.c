@@ -308,5 +308,5 @@ void lownet_sync_time(const lownet_frame_t* time_frame) {
     }
 
     memcpy(&net_system.sync_time, time_frame->payload, sizeof(net_system.sync_time));
-    net_system.sync_stamp = (esp_timer_get_time() / 1000)
+    net_system.sync_stamp = (esp_timer_get_time() / 1000);
 }
