@@ -1,120 +1,68 @@
-// #ifndef DEBUG
-// #define DEBUG
-// #endif
 
-/* -----------------------
-Issue with time
-Check print_time()
-Check ping()
-Check ping_receive()
-Check chat_tell()
-Check chat_shout()
-Done - Check chat_receive()
->>Maybe Implement time_receive
->>Check util_printable(char)
-Then app_main.c done
+#include <freertos/FreeRTOS.h>
+#include <freertos/event_groups.h>
+#include <freertos/queue.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
 
-Check input errors handles in the first assignment
-------------------------*/
-
-// CSTDLIB includes.
-#include <stdio.h>
 #include <string.h>
 
-// LowNet includes.
 #include "lownet.h"
-
 #include "serial_io.h"
-#include "utility.h"
 
-#include "app_chat.c"
-#include "app_ping.c"
+#include "app_chat.h"
 
-const char* ERROR_OVERRUN = "ERROR // INPUT OVERRUN";
-const char* ERROR_UNKNOWN = "ERROR // PROCESSING FAILURE";
+void chat_receive(const lownet_frame_t* frame) {
+	for (size_t i = 0; i < frame->length; i++) { // Check if all characters are valid
+        if (!util_printable(frame->payload[i])) {
+            printf("Invalid character in message received from Node 0x%02X: %c\n", frame->source, frame->payload[i]);
+            return; // Do not print the message.
+        }
+    }
 
-const char* ERROR_COMMAND = "Command error";
-const char* ERROR_ARGUMENT = "Argument error";
-
-void app_frame_dispatch(const lownet_frame_t* frame) {
-	switch (frame->protocol) {
-		case LOWNET_PROTOCOL_CHAT:
-			chat_receive(frame);
-			break;
-
-		case LOWNET_PROTOCOL_PING:
-			ping_receive(frame);
-			break;
-	}
-}
-
-void print_time(lownet_time_t time) {
-	if (time.seconds == 0 && time.parts == 0) {
-        printf("Network time is not available.\n");
+	if (frame->destination == lownet_get_device_id()) {
+		// This is a tell message, just for us!
+		printf("Tell message received from Node %u: %s\n", frame->source, frame->payload);
 	} else {
-		// Calculate the total milliseconds (with 10 ms accuracy) since the course started.
-		uint8_t centiseconds = (((uint64_t)(time.parts * 1000) / 256 + 5)/10);	// 10 ms accuracy
-		if (centiseconds <= 10) { // Handles the case, 16 ms -> 2 cs -> .02 instead of .2 (wrong) 
-			printf("%lu.0%u sec since the course started .\n", time.seconds, centiseconds);
-		} else {
-			printf("%lu.0%u sec since the course started .\n", time.seconds, centiseconds);
-		}
+		// This is a broadcast shout message.
+		printf("Shout message received from Node %u: %s\n", frame->source, frame->payload);
 	}
 }
 
-void app_main(void)
-{
-	char msg_in[MSG_BUFFER_LENGTH];
-	char msg_out[MSG_BUFFER_LENGTH];
-	
-	// Initialize the serial services.
-	init_serial_service();
+void chat_shout(const char* message) {
+	for (size_t i = 0; i < strlen(message); i++) { // Check if all characters are valid
+        if (!util_printable(message[i])) {
+            printf("Invalid character in message: %c\n", message[i]);
+            return; // Do not print the message.
+        }
+    }
 
-	// Initialize the LowNet services.
-	lownet_init(app_frame_dispatch);
+	lownet_frame_t frame;
+	frame.source = lownet_get_device_id();
+	frame.destination = 0xFF;
+	frame.protocol = LOWNET_PROTOCOL_CHAT;
+	frame.length = strlen(message);
+	memcpy(frame.payload, &message, frame.length);
 
-	printf("Own node: %u\n", lownet_get_device_id());
+	lownet_send(&frame);
+	printf("Message shouted");
+}
 
-	while (true) {
-		memset(msg_in, 0, MSG_BUFFER_LENGTH);
-		memset(msg_out, 0, MSG_BUFFER_LENGTH);
+void chat_tell(const char* message, uint8_t destination) {
+	for (size_t i = 0; i < strlen(message); i++) { // Check if all characters are valid
+        if (!util_printable(message[i])) {
+            printf("Invalid character in message: %c\n", message[i]);
+            return; // Do not print the message.
+        }
+    }
+    
+	lownet_frame_t frame;
+	frame.source = lownet_get_device_id();
+	frame.destination = destination;
+	frame.protocol = LOWNET_PROTOCOL_CHAT;
+	frame.length = strlen(message);
+	memcpy(frame.payload, &message, frame.length);
 
-		if (!serial_read_line(msg_in)) {
-			if (msg_in[0] == '/') {
-				char* cmd = strtok(msg_in, " "); // Get the ping or date command, "/" included
-				char* arg = strtok(NULL, "\n"); // Get the rest of the line as an argument
-				#ifdef DEBUG
-					printf("cmd: %s; arg: %s\n", cmd, arg);
-                #endif
-                if (cmd) {
-                    if (strcmp(cmd, "/ping") == 0) {
-                    	if (!arg) {
-		                	printf("%s\n", ERROR_ARGUMENT); // Unknown argument
-		                	continue;
-		                }
-                    	if (strcmp(arg,"all") == 0) arg = "0xFF"; // ping all connected devices if no arg
-                        ping((uint8_t)strtol(arg, NULL, 16));
-                    } else if (strcmp(cmd, "/date") == 0) {
-                        print_time(lownet_get_time());
-                    } else {
-                        printf("%s\n", ERROR_COMMAND); // Unknown command
-                    }
-                } else if (!cmd) {
-                	printf("%s\n", ERROR_COMMAND); // Unknown command
-                }
-			} else if (msg_in[0] == '@') {
-				char* dest_node = strtok(msg_in, " "); // Get the dest node, with the @
-				dest_node = dest_node + 1; // "+1" to remove the @
-				uint8_t destination = (uint8_t)strtol(dest_node, NULL, 16); // Convert hex string to uint8_t
-                char* msg = strtok(NULL, "\n"); // Get the rest of the line as a message
-                #ifdef DEBUG
-                	printf("dest_node: 0x%02X; msg: %s\n", destination, msg);
-                #endif
-                if (destination == 0xFF) chat_shout(msg);
-				else chat_tell(msg, destination);
-			} else {
-				chat_shout(msg_in + 1); // Remove "@" from the string
-			}
-		}
-	}
+	lownet_send(&frame);
+	printf("Message sent to %u:\n.", destination);
 }
