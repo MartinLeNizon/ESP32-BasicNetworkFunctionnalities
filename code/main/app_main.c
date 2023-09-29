@@ -110,7 +110,7 @@ void app_main(void)
                 #ifdef DEBUG
                 	printf("dest_node: 0x%02X; msg: %s\n", destination, msg);
                 #endif
-                if (destination == 0xFF) chat_shout(msg);
+                if (destination == 0xFF || destination == 0x00) chat_shout(msg);
 				else chat_tell(msg, destination);
 			} else {
 				chat_shout(msg_in + 1); // Remove "@" from the string
