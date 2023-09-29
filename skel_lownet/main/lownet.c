@@ -289,7 +289,7 @@ void lownet_inbound_handler(const esp_now_recv_info_t * info, const uint8_t* dat
 	}
 }
 
-/*void lownet_sync_time(const lownet_frame_t* time_frame) {
+void lownet_sync_time(const lownet_frame_t* time_frame) {
 	if (time_frame->length != sizeof(lownet_time_t)) {
 		// Malformed time packet, do nothing.
 		return;
@@ -298,17 +298,4 @@ void lownet_inbound_handler(const esp_now_recv_info_t * info, const uint8_t* dat
 	lownet_time_t stamp;
 	memcpy(&stamp, time_frame->payload, sizeof(stamp));
 	net_system.sync_stamp = (esp_timer_get_time() / 1000);
-}*/
-
-// Corrected version
-void lownet_sync_time(const lownet_frame_t* time_frame) {
-
-	if (time_frame->length != sizeof(lownet_time_t)) {
-		// Malformed time packet, do nothing.
-		return;
-	}
-
-	memcpy(&net_system.sync_time, time_frame->payload, sizeof(net_system.sync_time));
-	
-	net_system.sync_stamp = net_system.sync_time.seconds * 1000 + (net_system.sync_time.parts * 1000) / 256;
 }
