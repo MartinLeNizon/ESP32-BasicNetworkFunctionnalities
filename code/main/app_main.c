@@ -113,7 +113,7 @@ void app_main(void)
                 if (destination == 0xFF || destination == 0x00) chat_shout(msg);
 				else chat_tell(msg, destination);
 			} else {
-				chat_shout(msg_in + 1); // Remove "@" from the string
+				chat_shout(msg_in); // Remove "@" from the string
 			}
 		}
 	}
