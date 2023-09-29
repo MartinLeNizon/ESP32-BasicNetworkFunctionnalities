@@ -9,6 +9,7 @@
 
 #include "lownet.h"
 #include "serial_io.h"
+#include "utility.h"
 
 #include "app_chat.h"
 
@@ -55,7 +56,7 @@ void chat_tell(const char* message, uint8_t destination) {
             return; // Do not print the message.
         }
     }
-    
+
 	lownet_frame_t frame;
 	frame.source = lownet_get_device_id();
 	frame.destination = destination;
