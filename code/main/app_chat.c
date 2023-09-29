@@ -23,10 +23,10 @@ void chat_receive(const lownet_frame_t* frame) {
 
 	if (frame->destination == lownet_get_device_id()) {
 		// This is a tell message, just for us!
-		printf("Tell message received from Node %u: %s\n", frame->source, frame->payload);
+		printf("Tell message received from Node %u: %.*s\n", frame->source, frame->length, frame->payload);
 	} else {
 		// This is a broadcast shout message.
-		printf("Shout message received from Node %u: %s\n", frame->source, frame->payload);
+		printf("Shout message received from Node %u: %.*s\n", frame->source, frame->length, frame->payload);
 	}
 }
 
