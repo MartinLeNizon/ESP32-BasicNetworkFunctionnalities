@@ -1,0 +1,42 @@
+app_main.c; l.47; Don't check that the input length is >0.
+-> Input control in general
+
+app_ping.c; // Border line case if dif > 65536 -> would need uint64_t
+
+lownet_sync_time !!!
+
+
+________________
+
+I (740) ESPNOW: espnow [version: 1.0] init
+I (740) lownet-core: Initialized LowNet -- device ID: 0x31
+Own node: 49
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Network time is not available. Ping reply to 0xF0 failed.
+Message shouted: Hello world!
+Message shouted: report
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Network time is not available. Ping reply to 0xF0 failed.
+Message sent to 0xF0: report
+45.049 sec since the course started .
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Pinging 0xFF:
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Ping received from 0xF0 in 3879021191ms. Ping reply sent.
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Ping received from 0xF0 in 3879021190ms. Ping reply sent.
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Ping received from 0xF0 in 3879021195ms. Ping reply sent.
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Shout message received from Node 0xF0: Hello, this is the master node
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Ping received from 0xF0 in 3879021191ms. Ping reply sent.
+Shout message received from Node 0xF0: Send me 'report' for self-evaluation
+Ping received from 0xF0 in 3879021191ms. Ping reply sent.
+Shout message received from Node 0xF0: Hello, this is the master node
+Ping received from 0xF0 in 3879021191ms. Ping reply sent.

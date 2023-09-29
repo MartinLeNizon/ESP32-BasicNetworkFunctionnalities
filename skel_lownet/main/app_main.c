@@ -1,14 +1,17 @@
-/*#ifndef DEBUG
-#define DEBUG
-#endif*/
+// #ifndef DEBUG
+// #define DEBUG
+// #endif
 
 /* -----------------------
+Issue with time
 Check print_time()
 Check ping()
 Check ping_receive()
 Check chat_tell()
 Check chat_shout()
->>Implement chat_receive()
+Done - Check chat_receive()
+>>Maybe Implement time_receive
+>>Check util_printable(char)
 Then app_main.c done
 
 Check input errors handles in the first assignment
@@ -83,10 +86,14 @@ void app_main(void)
 				#ifdef DEBUG
 					printf("cmd: %s; arg: %s\n", cmd, arg);
                 #endif
-                if (cmd && arg) {
+                if (cmd) {
                     if (strcmp(cmd, "/ping") == 0) {
+                    	if (!arg) {
+		                	printf("%s\n", ERROR_ARGUMENT); // Unknown argument
+		                	continue;
+		                }
                     	if (strcmp(arg,"all") == 0) arg = "0xFF"; // ping all connected devices if no arg
-                        ping(hex_to_dec(arg));
+                        ping((uint8_t)strtol(arg, NULL, 16));
                     } else if (strcmp(cmd, "/date") == 0) {
                         print_time(lownet_get_time());
                     } else {
@@ -94,18 +101,19 @@ void app_main(void)
                     }
                 } else if (!cmd) {
                 	printf("%s\n", ERROR_COMMAND); // Unknown command
-                } else if (!arg) {
-                	printf("%s\n", ERROR_ARGUMENT); // Unknown argument
                 }
 			} else if (msg_in[0] == '@') {
 				char* dest_node = strtok(msg_in, " "); // Get the dest node, with the @
+				dest_node = dest_node + 1; // "+1" to remove the @
+				uint8_t destination = (uint8_t)strtol(dest_node, NULL, 16); // Convert hex string to uint8_t
                 char* msg = strtok(NULL, "\n"); // Get the rest of the line as a message
                 #ifdef DEBUG
-                	printf("dest_node: %s; msg: %s\n", dest_node+1, msg);
+                	printf("dest_node: 0x%02X; msg: %s\n", destination, msg);
                 #endif
-				chat_tell(msg, hex_to_dec(dest_node+1)); // "+1" to remove the @
+                if (destination == 0xFF) chat_shout(msg);
+				else chat_tell(msg, destination);
 			} else {
-				chat_shout(msg_in);
+				chat_shout(msg_in + 1); // Remove "@" from the string
 			}
 		}
 	}
