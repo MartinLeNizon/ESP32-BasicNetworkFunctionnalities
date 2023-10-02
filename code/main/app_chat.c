@@ -14,40 +14,40 @@
 #include "app_chat.h"
 
 void chat_receive(const lownet_frame_t* frame) {
-	for (size_t i = 0; i < frame->length; i++) { // Check if all characters are valid
+	/*for (size_t i = 0; i < frame->length; i++) { // Check if all characters are valid
         if (!util_printable(frame->payload[i])) {
             printf("Invalid character in message received from Node 0x%02X: %c\n", frame->source, frame->payload[i]);
             return; // Do not print the message.
         }
-    }
+    }*/
 
 	if (frame->destination == lownet_get_device_id()) {
 		// This is a tell message, just for us!
-		printf("Tell message received from Node %u: %.*s\n", frame->source, frame->length, frame->payload);
+		printf("Tell message received from Node 0x%02X: %.*s\n", frame->source, frame->length, frame->payload);
 	} else {
 		// This is a broadcast shout message.
-		printf("Shout message received from Node %u: %.*s\n", frame->source, frame->length, frame->payload);
+		printf("Shout message received from Node 0x%02X: %.*s\n", frame->source, frame->length, frame->payload);
 	}
 }
 
-void chat_shout(const char* message) {
-	for (size_t i = 0; i < strlen(message); i++) { // Check if all characters are valid
-        if (!util_printable(message[i])) {
-            printf("Invalid character in message: %c\n", message[i]);
-            return; // Do not print the message.
-        }
-    }
+// void chat_shout(const char* message) {
+// 	/*for (size_t i = 0; i < strlen(message); i++) { // Check if all characters are valid
+//         if (!util_printable(message[i])) {
+//             printf("Invalid character in message: %c\n", message[i]);
+//             return; // Do not print the message.
+//         }
+//     }*/
 
-	lownet_frame_t frame;
-	frame.source = lownet_get_device_id();
-	frame.destination = 0xFF;
-	frame.protocol = LOWNET_PROTOCOL_CHAT;
-	frame.length = strlen(message);
-	memcpy(frame.payload, &message, frame.length);
+// 	lownet_frame_t frame;
+// 	frame.source = lownet_get_device_id();
+// 	frame.destination = 0xFF;
+// 	frame.protocol = LOWNET_PROTOCOL_CHAT;
+// 	frame.length = strlen(message);
+// 	memcpy(frame.payload, &message, frame.length);
 
-	lownet_send(&frame);
-	printf("Message shouted");
-}
+// 	lownet_send(&frame);
+// 	printf("Message shouted: %s", message);
+// }
 
 void chat_tell(const char* message, uint8_t destination) {
 	for (size_t i = 0; i < strlen(message); i++) { // Check if all characters are valid
@@ -62,8 +62,12 @@ void chat_tell(const char* message, uint8_t destination) {
 	frame.destination = destination;
 	frame.protocol = LOWNET_PROTOCOL_CHAT;
 	frame.length = strlen(message);
-	memcpy(frame.payload, &message, frame.length);
+	memcpy(frame.payload, message, frame.length);
 
 	lownet_send(&frame);
-	printf("Message sent to %u:\n.", destination);
+	if (destination == 0xFF) {
+		printf("Message shouted: %s\n", message);
+	} else {
+		printf("Message sent to Node 0x%02X: %s\n", destination, message);
+	}
 }

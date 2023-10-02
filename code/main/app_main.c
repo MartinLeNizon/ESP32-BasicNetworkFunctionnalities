@@ -83,25 +83,18 @@ void app_main(void)
 			if (msg_in[0] == '/') {
 				char* cmd = strtok(msg_in, " "); // Get the ping or date command, "/" included
 				char* arg = strtok(NULL, "\n"); // Get the rest of the line as an argument
-				#ifdef DEBUG
-					printf("cmd: %s; arg: %s\n", cmd, arg);
-                #endif
-                if (cmd) {
-                    if (strcmp(cmd, "/ping") == 0) {
-                    	if (!arg) {
-		                	printf("%s\n", ERROR_ARGUMENT); // Unknown argument
-		                	continue;
-		                }
-                    	if (strcmp(arg,"all") == 0) arg = "0xFF"; // ping all connected devices if no arg
-                        ping((uint8_t)strtol(arg, NULL, 16));
-                    } else if (strcmp(cmd, "/date") == 0) {
-                        print_time(lownet_get_time());
-                    } else {
-                        printf("%s\n", ERROR_COMMAND); // Unknown command
-                    }
-                } else if (!cmd) {
-                	printf("%s\n", ERROR_COMMAND); // Unknown command
-                }
+                if (strcmp(cmd, "/ping") == 0) {
+                	//if (0x00 <= arg && arg <= 0xFF) {
+                	if (arg) {
+                    	ping((uint8_t)strtol(arg, NULL, 16));
+	                } else {
+	                	ping((uint8_t)strtol(0xFF, NULL, 16));
+	                }
+                } else if (strcmp(cmd, "/date") == 0) {
+                    print_time(lownet_get_time());
+                } else {
+                    printf("%s\n", ERROR_COMMAND); // Unknown command
+                }	
 			} else if (msg_in[0] == '@') {
 				char* dest_node = strtok(msg_in, " "); // Get the dest node, with the @
 				dest_node = dest_node + 1; // "+1" to remove the @
@@ -110,10 +103,13 @@ void app_main(void)
                 #ifdef DEBUG
                 	printf("dest_node: 0x%02X; msg: %s\n", destination, msg);
                 #endif
-                if (destination == 0xFF || destination == 0x00) chat_shout(msg);
-				else chat_tell(msg, destination);
+				// if ( ) {
+					chat_tell(msg, destination);
+				// } else {
+				// 	printf("%s\n", ERROR_ARGUMENT)
+				// }
 			} else {
-				chat_shout(msg_in); // Remove "@" from the string
+				chat_tell(msg_in, 0xFF);
 			}
 		}
 	}

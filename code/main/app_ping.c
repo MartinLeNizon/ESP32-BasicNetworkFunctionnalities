@@ -43,7 +43,11 @@ void ping(uint8_t node) {
 
     // Send the frame
     lownet_send(&ping_frame);
-	printf("Pinging 0x%02X:\n", node);
+    if (node == 0xFF) {
+    	printf("Pinging everyone");
+    } else {
+		printf("Pinging 0x%02X:\n", node);
+    }
 }
 
 
