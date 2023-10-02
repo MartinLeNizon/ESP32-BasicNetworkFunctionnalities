@@ -55,9 +55,9 @@ void print_time(lownet_time_t time) {
 		// Calculate the total milliseconds (with 10 ms accuracy) since the course started.
 		uint8_t centiseconds = (((uint64_t)(time.parts * 1000) / 256 + 5)/10);	// 10 ms accuracy
 		if (centiseconds <= 10) { // Handles the case, 16 ms -> 2 cs -> .02 instead of .2 (wrong) 
-			printf("%lu.0%u sec since the course started .\n", time.seconds, centiseconds);
+			printf("%lu.0%u sec since the course started.\n", time.seconds, centiseconds);
 		} else {
-			printf("%lu.0%u sec since the course started .\n", time.seconds, centiseconds);
+			printf("%lu.0%u sec since the course started.\n", time.seconds, centiseconds);
 		}
 	}
 }
