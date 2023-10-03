@@ -1,19 +1,1 @@
-No answer to report
-lownet_sync_time changed
-round_trip_time in PING command
 
-"
-Network time is not available. Ping reply to 0xF0 failed.
-Shout message received from Node 0xF0: Hello, this is the master node
-dest_node: 0xFF; msg: Bonjour
-Message shouted
-Shout message received from Node 0xF0: Send me 'report' for self-evaluation
-dest_node: 0xF0; msg: report
-Message sent to 0xF0: report
-Ping received from 0xF0 in 3879687979ms. Ping reply sent.
-Shout message received from Node 0xF0: Hello, this is the master node
-Shout message received from Node 0xF0: Send me 'report' for self-evaluation
-Shout message received from Node 0xF0: Hello, this is the master node
-
-***ERROR*** A stack overflow in task lownet_service has been detected.
-"
