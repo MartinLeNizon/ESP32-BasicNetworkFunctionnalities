@@ -1,22 +1,3 @@
-// #ifndef DEBUG
-// #define DEBUG
-// #endif
-
-/* -----------------------
-Issue with time
-Check print_time()
-Check ping()
-Check ping_receive()
-Check chat_tell()
-Check chat_shout()
-Done - Check chat_receive()
->>Maybe Implement time_receive
->>Check util_printable(char)
-Then app_main.c done
-
-Check input errors handles in the first assignment
-------------------------*/
-
 // CSTDLIB includes.
 #include <stdio.h>
 #include <string.h>
@@ -48,16 +29,16 @@ void app_frame_dispatch(const lownet_frame_t* frame) {
 	}
 }
 
-void print_time(lownet_time_t time) {
+void print_date(lownet_time_t time) {
 	if (time.seconds == 0 && time.parts == 0) {
         printf("Network time is not available.\n");
 	} else {
 		// Calculate the total milliseconds (with 10 ms accuracy) since the course started.
-		uint8_t centiseconds = (((uint64_t)(time.parts * 1000) / 256 + 5)/10);	// 10 ms accuracy
+		uint8_t centiseconds = (uint8_t) ( ( ((uint64_t) time.parts * 1000) / 256 + 5) /10 );	// 10 ms accuracy
 		if (centiseconds <= 10) { // Handles the case, 16 ms -> 2 cs -> .02 instead of .2 (wrong) 
 			printf("%lu.0%u sec since the course started.\n", time.seconds, centiseconds);
 		} else {
-			printf("%lu.0%u sec since the course started.\n", time.seconds, centiseconds);
+			printf("%lu.%u sec since the course started.\n", time.seconds, centiseconds);
 		}
 	}
 }
@@ -81,35 +62,34 @@ void app_main(void)
 
 		if (!serial_read_line(msg_in)) {
 			if (msg_in[0] == '/') {
+
 				char* cmd = strtok(msg_in, " "); // Get the ping or date command, "/" included
 				char* arg = strtok(NULL, "\n"); // Get the rest of the line as an argument
+
                 if (strcmp(cmd, "/ping") == 0) {
-                	//if (0x00 <= arg && arg <= 0xFF) {
                 	if (arg) {
-                    	ping((uint8_t)strtol(arg, NULL, 16));
+                    	ping((uint8_t)strtol(arg, NULL, 16)); // Convert hex string to uint8_t
 	                } else {
-	                	ping((uint8_t)strtol(0xFF, NULL, 16));
+	                	ping(0xFF);
 	                }
                 } else if (strcmp(cmd, "/date") == 0) {
-                    print_time(lownet_get_time());
+                    print_date(lownet_get_time());
                 } else {
                     printf("%s\n", ERROR_COMMAND); // Unknown command
                 }	
+
 			} else if (msg_in[0] == '@') {
+
 				char* dest_node = strtok(msg_in, " "); // Get the dest node, with the @
 				dest_node = dest_node + 1; // "+1" to remove the @
 				uint8_t destination = (uint8_t)strtol(dest_node, NULL, 16); // Convert hex string to uint8_t
                 char* msg = strtok(NULL, "\n"); // Get the rest of the line as a message
-                #ifdef DEBUG
-                	printf("dest_node: 0x%02X; msg: %s\n", destination, msg);
-                #endif
-				// if ( ) {
-					chat_tell(msg, destination);
-				// } else {
-				// 	printf("%s\n", ERROR_ARGUMENT)
-				// }
+				chat_tell(msg, destination);
+
 			} else {
-				chat_tell(msg_in, 0xFF);
+
+				chat_shout(msg_in);
+
 			}
 		}
 	}

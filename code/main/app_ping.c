@@ -41,10 +41,10 @@ void ping(uint8_t node) {
     ping_frame.length = sizeof(ping_packet);
     memcpy(ping_frame.payload, &ping_packet, sizeof(ping_packet)); // Copy the ping packet to the frame payload.
 
-    // Send the frame
     lownet_send(&ping_frame);
+
     if (node == 0xFF) {
-    	printf("Pinging everyone");
+    	printf("Pinging everyone\n");
     } else {
 		printf("Pinging 0x%02X:\n", node);
     }
@@ -53,8 +53,7 @@ void ping(uint8_t node) {
 
 void ping_receive(const lownet_frame_t* frame) {
 	if (frame->length < sizeof(ping_packet_t)) {
-		// Malformed frame.  Discard.
-		return;
+		return; // Malformed frame.  Discard.
 	}
 
 	// Extract the ping packet from the frame payload
@@ -63,16 +62,13 @@ void ping_receive(const lownet_frame_t* frame) {
 
 	if (received_ping.origin == lownet_get_device_id()) { // If it's the pong
 
-		/*uint64_t round_trip_ms = (received_ping.timestamp_back.seconds - received_ping.timestamp_out.seconds) * 1000 + ((received_ping.timestamp_back.parts - received_ping.timestamp_out.parts) * 1000 / 256); // Border line case if dif > 65536 -> need uint64_t*/
-
-		// Calculate the round-trip time in milliseconds = current_time - timestamp_out (timestamp_back does not matter)
-		uint64_t round_trip_ms = (lownet_get_time().seconds - received_ping.timestamp_out.seconds) * 1000 + ((lownet_get_time().parts - received_ping.timestamp_out.parts) * 1000 / 256); // Border line case if dif > 65536 -> need uint64_t
-
-		printf("Ping reply from 0x%02X; RTT=%llums\n", received_ping.origin, round_trip_ms);
+		uint32_t round_trip_ms = (lownet_get_time().seconds - received_ping.timestamp_out.seconds) * 1000 + ( (uint32_t) (lownet_get_time().parts - received_ping.timestamp_out.parts) * 1000 / 256);
 
 		// Check if the round-trip time exceeds the maximum allowed time
 		if (round_trip_ms > MAX_PING_MS) {
 			printf("Round-trip time exceeds maximum allowed time.\n");
+		} else {
+			printf("Ping reply from 0x%02X; RTT=%lums\n", frame->source, round_trip_ms);
 		}
 
 	} else { // If it's the ping
@@ -90,8 +86,6 @@ void ping_receive(const lownet_frame_t* frame) {
 			ping_packet.timestamp_back = time;
 		}
 
-		uint64_t outward_trip_ms = (ping_packet.timestamp_back.seconds - ping_packet.timestamp_out.seconds) * 1000 + ((ping_packet.timestamp_back.parts - ping_packet.timestamp_out.parts) * 1000) / 256; // Border line case if dif > 65536 -> need uint64_t
-
 		// Create a LowNet frame to send the ping packet
 		lownet_frame_t ping_frame;
 		ping_frame.source = lownet_get_device_id();
@@ -102,7 +96,7 @@ void ping_receive(const lownet_frame_t* frame) {
 
 	    // Send the frame
 	    lownet_send(&ping_frame);
-		printf("Ping received from 0x%02X in %llums. Ping reply sent.\n", dest, outward_trip_ms);
+		printf("Ping received from 0x%02X. Ping reply sent.\n", dest);
 	}
 
 
