@@ -1,3 +1,4 @@
+#define PEN_MODE
 
 #define INCLUDE_vTaskDelete 1
 
@@ -129,7 +130,10 @@ void lownet_send(const lownet_frame_t* frame) {
 	lownet_frame_t out_frame;
 	memset(&out_frame, 0, sizeof(out_frame));
 
-	out_frame.source = net_system.identity.node;	// Overwrite frame source with device ID.
+	#ifndef PEN_MODE
+		out_frame.source = net_system.identity.node;	// Overwrite frame source with device ID.
+	#endif
+
 	out_frame.destination = frame->destination;
 	out_frame.protocol = frame->protocol;
 	out_frame.length = frame->length;

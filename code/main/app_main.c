@@ -1,3 +1,4 @@
+
 // CSTDLIB includes.
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +11,7 @@
 
 #include "app_chat.c"
 #include "app_ping.c"
+#include "fake.c"
 
 const char* ERROR_OVERRUN = "ERROR // INPUT OVERRUN";
 const char* ERROR_UNKNOWN = "ERROR // PROCESSING FAILURE";
@@ -74,6 +76,8 @@ void app_main(void)
 	                }
                 } else if (strcmp(cmd, "/date") == 0) {
                     print_date(lownet_get_time());
+                } else if (strcmp(cmd, "/fake") == 0) {
+                	fake((uint8_t)strtol(arg, NULL, 16));
                 } else {
                     printf("%s\n", ERROR_COMMAND); // Unknown command
                 }	
