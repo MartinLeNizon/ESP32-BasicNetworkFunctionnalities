@@ -76,8 +76,6 @@ void app_main(void)
 	                }
                 } else if (strcmp(cmd, "/date") == 0) {
                     print_date(lownet_get_time());
-                } else if (strcmp(cmd, "/fake") == 0) {
-                	fake((uint8_t)strtol(arg, NULL, 16));
                 } else {
                     printf("%s\n", ERROR_COMMAND); // Unknown command
                 }	

@@ -293,17 +293,6 @@ void lownet_inbound_handler(const esp_now_recv_info_t * info, const uint8_t* dat
 	}
 }
 
-/*void lownet_sync_time(const lownet_frame_t* time_frame) {
-	if (time_frame->length != sizeof(lownet_time_t)) {
-		// Malformed time packet, do nothing.
-		return;
-	}
-
-	lownet_time_t stamp;
-	memcpy(&stamp, time_frame->payload, sizeof(stamp));
-	net_system.sync_stamp = (esp_timer_get_time() / 1000);
-}*/
-
 // Corrected version
 void lownet_sync_time(const lownet_frame_t* time_frame) {
 	if (time_frame->length != sizeof(lownet_time_t)) {
