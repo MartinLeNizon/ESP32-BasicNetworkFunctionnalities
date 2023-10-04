@@ -7,6 +7,8 @@
 #include "lownet.h"
 #include "serial_io.h"
 
+#include "globals.h"
+
 const uint16_t MAX_PING_MS = 60000; // 1 minute
 
 typedef struct __attribute__((__packed__))
@@ -80,7 +82,10 @@ void ping_receive(const lownet_frame_t* frame) {
 		// Get the current network time for the timestamp_out field
 		lownet_time_t time = lownet_get_time();
 		if (time.seconds == 0 && time.parts == 0) {
-			printf("Network time is not available. Ping reply to 0x%02X failed.\n", dest);
+			if (!mute_mode) {
+				printf("Network time is not available. Ping reply to 0x%02X failed.\n", dest);
+			}
+
 			return;
 		} else {
 			ping_packet.timestamp_back = time;
@@ -96,7 +101,9 @@ void ping_receive(const lownet_frame_t* frame) {
 
 	    // Send the frame
 	    lownet_send(&ping_frame);
-		printf("Ping received from 0x%02X. Ping reply sent.\n", dest);
+	    if (!mute_mode){
+			printf("Ping received from 0x%02X. Ping reply sent.\n", dest);
+	    }
 	}
 
 

@@ -11,13 +11,16 @@
 
 #include "app_chat.c"
 #include "app_ping.c"
-#include "fake.c"
+
+#include "globals.h"
 
 const char* ERROR_OVERRUN = "ERROR // INPUT OVERRUN";
 const char* ERROR_UNKNOWN = "ERROR // PROCESSING FAILURE";
 
 const char* ERROR_COMMAND = "Command error";
 const char* ERROR_ARGUMENT = "Argument error";
+
+int mute_mode = 1;
 
 void app_frame_dispatch(const lownet_frame_t* frame) {
 	switch (frame->protocol) {

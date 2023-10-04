@@ -13,6 +13,8 @@
 
 #include "app_chat.h"
 
+#include "globals.h"
+
 int message_is_printable(const char* message, const uint8_t length) {
 
 	for (size_t i = 0; i < length; i++) { // Check if all characters are valid
@@ -26,7 +28,10 @@ int message_is_printable(const char* message, const uint8_t length) {
 
 void chat_receive(const lownet_frame_t* frame) {
 	if (!message_is_printable((char*) frame->payload, frame->length)) {
-		printf("Error when receiving a message: non-printable character\n");
+		if (!mute_mode) {
+			printf("Error when receiving a message: non-printable character\n");
+		}
+
 		return;
 	}
 
@@ -35,9 +40,10 @@ void chat_receive(const lownet_frame_t* frame) {
 		printf("Tell message received from Node 0x%02X: %.*s\n", frame->source, frame->length, frame->payload);
 	} else {
 		// This is a broadcast shout message.
-		printf("Shout message received from Node 0x%02X: %.*s\n", frame->source, frame->length, frame->payload);
+		if (!mute_mode) {
+			printf("Shout message received from Node 0x%02X: %.*s\n", frame->source, frame->length, frame->payload);
+		}
 	}
-
 	
 }
 
