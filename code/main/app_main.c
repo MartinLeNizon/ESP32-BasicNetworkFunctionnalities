@@ -1,3 +1,4 @@
+
 // CSTDLIB includes.
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +11,7 @@
 
 #include "app_chat.c"
 #include "app_ping.c"
+#include "fake.c"
 
 const char* ERROR_OVERRUN = "ERROR // INPUT OVERRUN";
 const char* ERROR_UNKNOWN = "ERROR // PROCESSING FAILURE";

@@ -1,3 +1,4 @@
+#define PEN_MODE
 
 #define INCLUDE_vTaskDelete 1
 
@@ -129,7 +130,10 @@ void lownet_send(const lownet_frame_t* frame) {
 	lownet_frame_t out_frame;
 	memset(&out_frame, 0, sizeof(out_frame));
 
-	out_frame.source = net_system.identity.node;	// Overwrite frame source with device ID.
+	#ifndef PEN_MODE
+		out_frame.source = net_system.identity.node;	// Overwrite frame source with device ID.
+	#endif
+
 	out_frame.destination = frame->destination;
 	out_frame.protocol = frame->protocol;
 	out_frame.length = frame->length;
@@ -288,17 +292,6 @@ void lownet_inbound_handler(const esp_now_recv_info_t * info, const uint8_t* dat
 		// Packet is dropped.
 	}
 }
-
-/*void lownet_sync_time(const lownet_frame_t* time_frame) {
-	if (time_frame->length != sizeof(lownet_time_t)) {
-		// Malformed time packet, do nothing.
-		return;
-	}
-
-	lownet_time_t stamp;
-	memcpy(&stamp, time_frame->payload, sizeof(stamp));
-	net_system.sync_stamp = (esp_timer_get_time() / 1000);
-}*/
 
 // Corrected version
 void lownet_sync_time(const lownet_frame_t* time_frame) {
