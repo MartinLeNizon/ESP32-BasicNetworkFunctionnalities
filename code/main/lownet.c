@@ -43,6 +43,7 @@ struct {
 } net_system;
 
 uint8_t	net_initialized = 0;
+uint8_t	net_time_initialized = 0;
 
 // Forward declarations.
 void lownet_service_main(void* pvTaskParam);
@@ -289,18 +290,6 @@ void lownet_inbound_handler(const esp_now_recv_info_t * info, const uint8_t* dat
 	}
 }
 
-/*void lownet_sync_time(const lownet_frame_t* time_frame) {
-	if (time_frame->length != sizeof(lownet_time_t)) {
-		// Malformed time packet, do nothing.
-		return;
-	}
-
-	lownet_time_t stamp;
-	memcpy(&stamp, time_frame->payload, sizeof(stamp));
-	net_system.sync_stamp = (esp_timer_get_time() / 1000);
-}*/
-
-// Corrected version
 void lownet_sync_time(const lownet_frame_t* time_frame) {
 	if (time_frame->length != sizeof(lownet_time_t)) {
         // Malformed time packet, do nothing.
@@ -309,4 +298,9 @@ void lownet_sync_time(const lownet_frame_t* time_frame) {
 
     memcpy(&net_system.sync_time, time_frame->payload, sizeof(net_system.sync_time));
     net_system.sync_stamp = (esp_timer_get_time() / 1000);
+
+    if (net_time_initialized == 0) {
+    	printf("Network time available\n");
+    	net_time_initialized = 1;
+    }
 }
